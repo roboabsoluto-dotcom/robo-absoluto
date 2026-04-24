@@ -29,13 +29,13 @@ const PDF = {
 };
 
 const LINKS = {
-  plataforma: process.env.LINK_PLATAFORMA || "LINK_PLATAFORMA",
-  plano7: process.env.LINK_PLANO7 || "LINK_PLANO7",
-  plano4: process.env.LINK_PLANO4 || "LINK_PLANO4",
-  plano6: process.env.LINK_PLANO6 || "LINK_PLANO6",
-  plano12: process.env.LINK_PLANO12 || "LINK_PLANO12",
-  plano2: process.env.LINK_PLANO2 || "LINK_PLANO2",
-  r4: process.env.LINK_R4 || "LINK_R4",
+  plataforma: process.env.LINK_PLATAFORMA || "https://app.fauesp.edu.br/login",
+  plano7: process.env.LINK_PLANO7 || "https://fauespmilitar.com.br/certificadosfauesp.html",
+  plano4: process.env.LINK_PLANO4 || "https://fauespmilitar.com.br/certificadosfauesp.html",
+  plano6: process.env.LINK_PLANO6 || "https://fauespmilitar.com.br/certificadosfauesp.html",
+  plano12: process.env.LINK_PLANO12 || "https://fauespmilitar.com.br/certificadosfauesp.html",
+  plano2: process.env.LINK_PLANO2 || "https://fauespmilitar.com.br/certificadosfauesp.html",
+  r4: process.env.LINK_R4 || "https://www.fauespmilitar.com.br/requerimento_fauesp.html",
   edf: process.env.LINK_EDF || "LINK_EDF",
   certificados:
     process.env.LINK_CERTIFICADOS ||
@@ -63,6 +63,8 @@ const tempoSessao = {};
 // Tempo de inatividade em ms antes de resetar a sessão (30 minutos).
 const TIMEOUT_SESSAO_MS = 30 * 60 * 1000;
 
+// Numero de desvio
+const NUMERO_ATENDENTE = "5511999990190@s.whatsapp.net";
 // ─── Utilitários ──────────────────────────────────────────────────────────────
 
 function delay(ms) {
@@ -96,44 +98,36 @@ function baixarBuffer(url) {
 // ─── Dados de aproveitamento por estado ──────────────────────────────────────
 
 const aproveitamento = {
-  alagoas: "✅ Dispensa Completa",
-  amazonas: "3 disciplinas + Atividades em 3 meses",
-  bahia: "4 disciplinas + 4 Atividades em 6 meses",
+  alagoas: "Dispensa Completa",
+  amazonas: "3 disciplinas + Projetos em 3 meses",
+  bahia: "4 disciplinas + 4 Projetos em 6 meses",
   ceará: "7 disciplinas em 6 meses",
-  "espírito santo": "14 disciplinas + 4 Atividades em 12 meses",
-  "força aérea": "4 disciplinas + 4 Atividades em 6 meses",
-  "gcm paranaguá": "5 Disciplinas + 4 Atividades em 6 meses",
-  maranhão: "3 disciplinas + 4 atividades em 6 meses",
-  "mato grosso": "6 disciplinas + 4 atividades em 8 meses",
-  "mato grosso do sul": "3 disciplinas + 4 atividades em 4 meses",
-  "minas gerais":
-    "• PM: 3 disciplinas + Atividades em 3 meses\n• Bombeiros: 3 disciplinas + Atividades em 3 meses",
-  pará: "• PM: 3 disciplinas + Atividades em 3 meses\n• Bombeiro: 7 disciplinas em 6 meses",
-  paraíba: "6 disciplinas + Atividades em 6 meses",
-  paraná:
-    "• PM: 6 disciplinas em 3 meses\n• Bombeiro: 6 disciplinas + 4 atividades em 8 meses",
-  pernambuco: "3 disciplinas + Atividades em 3 meses",
-  piauí:
-    "• Soldado: 3 disciplinas + 4 Atividades em 6 meses\n• Bombeiros: 6 disciplinas + 4 Atividades em 6 meses",
-  "são paulo": "✅ Dispensa Completa",
+  maranhão: "3 disciplinas + 4 Projetos em 6 meses",
+  "minas gerais": "3 disciplinas + Projetos em 3 meses",
+  pará: "PM: 3 disciplinas + Projetos em 3 meses | Bombeiros: 7 disciplinas em 6 meses",
+  paraná: "6 disciplinas em 3 meses",
+  pernambuco: "3 disciplinas + Projetos em 3 meses",
+  piauí: "Soldado: 3 disciplinas + 4 projetos em 6 meses",
+  "são paulo": "Dispensa Completa",
   sergipe: "4 disciplinas em 3 meses",
-  rondônia:
-    "• A partir de 2010: 6 disciplinas em 3 meses\n• Anterior a 2010: 13 disciplinas em 6 meses",
-  roraima:
-    "• Soldado: 16 disciplinas + Atividades em 15 meses\n• Cabo: 7 disciplinas + Atividades em 8 meses\n• Sargento: 3 disciplinas + Atividades em 4 meses",
-  "rio de janeiro": "Soldado: 3 disciplinas + 4 Atividades em 6 meses",
-  "rio grande do norte": "3 disciplinas + 4 Atividades em 6 meses",
-  "rio grande do sul": "3 disciplinas + 4 Atividades em 6 meses",
-  tocantins: "7 disciplinas + 4 atividades em 9 meses",
+  rondônia: "A partir de 2010: 6 disciplinas em 3 meses | Anterior a 2010: 13 disciplinas em 6 meses",
+  roraima: "3 disciplinas + 4 projetos em 6 meses",
+  "rio de janeiro": "Soldado: 3 disciplinas + 4 projetos em 6 meses",
+  "rio grande do norte": "3 disciplinas + 4 projetos em 6 meses",
+  "rio grande do sul": "3 disciplinas + 4 projetos em 6 meses"
 };
 
 // Mapa de siglas de estado para o nome completo usado em `aproveitamento`.
 const siglas = {
+  ac: "acre",
   al: "alagoas",
+  ap: "amapá",
   am: "amazonas",
   ba: "bahia",
   ce: "ceará",
+  df: "distrito federal",
   es: "espírito santo",
+  go: "goiás",
   ma: "maranhão",
   mt: "mato grosso",
   ms: "mato grosso do sul",
@@ -143,14 +137,15 @@ const siglas = {
   pr: "paraná",
   pe: "pernambuco",
   pi: "piauí",
-  sp: "são paulo",
-  se: "sergipe",
-  ro: "rondônia",
-  rr: "roraima",
   rj: "rio de janeiro",
   rn: "rio grande do norte",
   rs: "rio grande do sul",
-  to: "tocantins",
+  ro: "rondônia",
+  rr: "roraima",
+  sc: "santa catarina",
+  sp: "são paulo",
+  se: "sergipe",
+  to: "tocantins"
 };
 
 /**
@@ -195,11 +190,32 @@ async function enviarTexto(jid, texto) {
     console.error(`[ERRO][enviarTexto][${jid}]`, e.message);
   }
 }
+async function alertarAtendente(nome, jidCliente, etapaAtual, mensagemCliente) {
+  try {
 
+    await sock.sendMessage(NUMERO_ATENDENTE, {
+      text:
+        `🚨 *NOVO LEAD PARA ATENDIMENTO*\n\n` +
+        `👤 Nome: ${nome}\n` +
+        `📍 Etapa: ${etapaAtual}\n` +
+        `💬 Mensagem: ${mensagemCliente}\n\n` +
+        `⚡ Verifique a conversa ativa no WhatsApp para responder o cliente.`
+    });
+
+  } catch (e) {
+    console.error("[ERRO][alertarAtendente]", e.message);
+  }
+}
 async function enviarImagem(jid, url, caption) {
   try {
+
+    if (!url) {
+      console.log("⚠️ URL da imagem não definida");
+      return;
+    }
+
     await sock.sendMessage(jid, { image: { url }, caption });
-    console.log("✅ Imagem enviada");
+
   } catch (e) {
     console.error(`[ERRO][enviarImagem][${jid}]`, e.message);
   }
@@ -267,15 +283,18 @@ async function mostrarMenu(jid) {
 Como posso te ajudar agora?
 
 1️⃣ Plataforma de Estudo
+
 2️⃣ Sobre seu Curso
+
 3️⃣ Diplomas e Certificados
+
 4️⃣ Outros assuntos
 
 Digite apenas o número.`
   );
 }
 
-async function handleFinalizado(jid, msg) {
+async function handleFinalizado(jid, msg, nome) {
   if (["menu", "inicio", "início", "voltar", "0"].includes(msg)) {
     return mostrarMenu(jid);
   }
@@ -290,7 +309,7 @@ Se precisar de algo novamente, digite:
   );
 }
 
-async function handleMenu(jid, msg) {
+async function handleMenu(jid, msg, nome) {
   if (msg === "5") {
     etapa[jid] = "menu";
     await enviarTexto(
@@ -300,8 +319,11 @@ async function handleMenu(jid, msg) {
 Como posso te ajudar?
 
 1️⃣ Plataforma de Estudo
+
 2️⃣ Sobre seu Curso
+
 3️⃣ Diplomas e Certificados
+
 4️⃣ Atendimento e Suporte
 
 ✍️ Digite apenas o número.`
@@ -324,7 +346,9 @@ Você pode estudar:
 
 👇 Acesse a plataforma no link abaixo:
 
-${LINKS.plataforma}`
+${LINKS.plataforma}
+
+0️⃣ - Para voltar no Menu Principal`
     );
     return;
   }
@@ -367,7 +391,9 @@ Eles podem ser utilizados para:
 
 📄 Após a conclusão do curso, o aluno poderá solicitar a emissão do *certificado ou diploma oficial no site abaixo*.
 
-${LINKS.certificados}`
+${LINKS.certificados}
+
+0️⃣ - Para voltar no Menu Principal`
     );
     return;
   }
@@ -381,10 +407,14 @@ ${LINKS.certificados}`
 Como podemos te ajudar?
 
 1️⃣ Adquirir um novo curso
+
 2️⃣ Dúvidas cadastrais
+
 3️⃣ Financeiro
+
 4️⃣ Encerrar atendimento
-5️⃣ 🔙 Voltar ao início
+
+5️⃣ Voltar ao início ◀️
 
 ✍️ Digite apenas o número.`
     );
@@ -398,13 +428,16 @@ Como podemos te ajudar?
 Escolha uma opção:
 
 1️⃣ Plataforma de Estudo
+
 2️⃣ Sobre seu Curso
+
 3️⃣ Diplomas e Certificados
+
 4️⃣ Outros assuntos`
   );
 }
 
-async function handleCursoMenu(jid, msg) {
+async function handleCursoMenu(jid, msg, nome) {
   if (msg === "0" || msg === "9") {
     return mostrarMenu(jid);
   }
@@ -436,7 +469,10 @@ São exigidas *700 horas de estágio presencial*, distribuídas nas seguintes á
 • Saúde
 • Treinamento Esportivo
 
-✅ Trata-se de um projeto exclusivo, estruturado para *otimizar o tempo de formação sem comprometer a qualidade acadêmica*.`
+✅ Trata-se de um projeto exclusivo, estruturado para *otimizar o tempo de formação sem comprometer a qualidade acadêmica*.
+
+
+0️⃣ - Para voltar no Menu Principal`
     );
     return;
   }
@@ -453,8 +489,8 @@ De qual estado você é?
 
 Digite o nome ou a sigla.
 
-🔙 9 Voltar
-🏠 0 Menu principal`
+9️⃣ Voltar
+0️⃣ - Para voltar no Menu Principal`
     );
     return;
   }
@@ -485,7 +521,10 @@ Para finalizar o curso é necessário:
 • Realizar *400 horas de estágio supervisionado*
 • Apresentar o *Trabalho de Conclusão de Curso (TCC)* no último módulo
 
-✅ É um modelo otimizado, pensado para *conciliar rotina profissional com progressão acadêmica*, mantendo conformidade com as normas do MEC e qualidade na formação.`
+✅ É um modelo otimizado, pensado para *conciliar rotina profissional com progressão acadêmica*, mantendo conformidade com as normas do MEC e qualidade na formação.
+
+
+0️⃣ - Para voltar no Menu Principal`
     );
     await delay(3000);
     await enviarImagem(jid, URLS.licenciaturas, "📚 Licenciaturas disponíveis");
@@ -516,67 +555,122 @@ O prazo mínimo para conclusão é de *4 meses*.
 
 Após finalizar o curso, o aluno poderá solicitar o *certificado reconhecido pelo MEC e válido em todo o território nacional*.
 
-✅ É uma solução acadêmica estratégica para quem busca *especialização com flexibilidade e rapidez*, sem abrir mão da qualidade na formação.`
+✅ É uma solução acadêmica estratégica para quem busca *especialização com flexibilidade e rapidez*, sem abrir mão da qualidade na formação.
+
+
+
+0️⃣ - Para voltar no Menu Principal`
     );
     await delay(3000);
     await enviarPDF(jid, PDF.pos, "📄 Opções de Pós-graduação");
     return;
   }
-
+ if (msg === "5") {
+    return mostrarMenu(jid);
+  }
   await enviarTexto(jid, "Digite apenas 1, 2, 3, 4 ou 5.");
 }
 
-async function handleOutrosMenu(jid, msg) {
+async function handleOutrosMenu(jid, msg, nome) {
+  if (msg === "0") {
+  return mostrarMenu(jid);
+}
+
+if (msg === "9") {
+  return mostrarMenu(jid);
+}
   if (msg === "1") {
     etapa[jid] = "planos_menu";
     await enviarTexto(
       jid,
       `🚨 *OPORTUNIDADE DE FORMAÇÃO* 🚨
 
-Temos alguns planos disponíveis.
+Abaixo temos alguns planos, chame um consultor para conhecer mais
 
 Escolha qual deseja conhecer:
 
 1️⃣ Plano 7 — Formação Completa
+
 2️⃣ Plano 4 — Mais Procurado
+
 3️⃣ Plano 6 — Pós-graduações
+
 4️⃣ Plano 12 — Área de Segurança
+
 5️⃣ Plano 2 — Gestão Pública
+
 6️⃣ Plano 5 — Complementação (R4)
+
 7️⃣ Educação Física
-8️⃣ Falar com especialista
-9️⃣ 🔙 Voltar
+
+8️⃣ Chamar um Consultor
+
+9️⃣ Voltar ◀
 
 ✍️ Digite apenas o número da opção.`
     );
     return;
   }
 
-  if (msg === "2") {
-    etapa[jid] = "finalizado";
-    await enviarTexto(
-      jid,
-      `📋 *Dúvidas cadastrais*
+if (msg === "2") {
+  etapa[jid] = "finalizado";
 
-Vou encaminhar você para um atendente especializado.
+await enviarTexto(
+  jid,
+`📋 *Dúvidas Cadastrais*
 
-Aguarde um momento.`
-    );
-    return;
-  }
+Seu atendimento será encaminhado para um *especialista da equipe acadêmica*.
+
+Ele poderá ajudar com:
+
+✅ Atualização de dados  
+✅ Cadastro na plataforma  
+✅ Recuperação de acesso  
+✅ Informações acadêmicas  
+
+👨‍💼 *Um especialista entrará em contato em breve.*
+
+Obrigado pela sua paciência!`
+);
+
+await alertarAtendente(
+  nome,
+  jid,
+  "Dúvidas Cadastrais",
+  "Cliente solicitou ajuda cadastral"
+);
+
+return;
+}
 
   if (msg === "3") {
     etapa[jid] = "finalizado";
-    await enviarTexto(
-      jid,
-      `💳 *Financeiro*
+await enviarTexto(
+  jid,
+  `💳 *Setor Financeiro*
 
-Vou encaminhar você para o setor responsável.
+Seu atendimento será encaminhado para um *especialista do setor financeiro*.
 
-Aguarde um momento.`
-    );
-    return;
-  }
+Ele poderá ajudar com:
+
+✅ Informações sobre pagamentos  
+✅ Emissão de boletos  
+✅ Dúvidas sobre parcelas  
+✅ Regularização financeira  
+
+👨‍💼 *Um especialista da equipe entrará em contato em breve.*
+
+Agradecemos pela sua paciência! 🙏`
+);
+
+await alertarAtendente(
+  nome,
+  jid,
+  "Financeiro",
+  "Cliente solicitou atendimento financeiro"
+);
+
+return;  }
 
   if (msg === "4") {
     etapa[jid] = "finalizado";
@@ -594,7 +688,10 @@ Sempre que precisar estamos à disposição!`
   }
 }
 
-async function handlePlanosMenu(jid, msg) {
+async function handlePlanosMenu(jid, msg, nome) {
+  if (msg === "0") {
+  return mostrarMenu(jid);
+}
   if (msg === "9") {
     etapa[jid] = "outros_menu";
     await enviarTexto(
@@ -602,10 +699,14 @@ async function handlePlanosMenu(jid, msg) {
       `💬 *Outros assuntos*
 
 1️⃣ Adquirir um curso
+
 2️⃣ Dúvidas cadastrais
+
 3️⃣ Financeiro
+
 4️⃣ Encerrar atendimento
-5️⃣ 🔙 Voltar`
+
+5️⃣ Voltar ◀️​`
     );
     return;
   }
@@ -614,7 +715,7 @@ async function handlePlanosMenu(jid, msg) {
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `🔥 *PLANO 7 — FORMAÇÃO MAIS COMPLETA*
+      `🔥 *PLANO 7 — FORMAÇÃO MAIS COMPLETA* 🔥
 
 Inclui:
 
@@ -629,9 +730,17 @@ Inclui:
 12x R$549 no cartão
 12x R$599 no boleto
 
-👇 Para iniciar sua matrícula:
 
-${LINKS.plano7}`
+👇 *Faça sua matrícula no link abaixo:*
+
+${LINKS.plano7}
+
+👨‍💼 *Precisa de ajuda para escolher o melhor plano?*
+
+Digite:
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu ◀️​`
     );
     return;
   }
@@ -640,7 +749,7 @@ ${LINKS.plano7}`
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `🔥 *PLANO 4 — MAIS PROCURADO*
+      `🔥 *PLANO 4 — MAIS PROCURADO* 🔥
 
 Inclui:
 
@@ -655,7 +764,12 @@ Inclui:
 
 👇 Faça sua matrícula:
 
-${LINKS.plano4}`
+${LINKS.plano4}
+
+👨‍💼 *Precisa de ajuda para escolher o melhor plano?*
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu ◀️​`
     );
     return;
   }
@@ -664,21 +778,24 @@ ${LINKS.plano4}`
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `💸 *PLANO 6 — MELHOR CUSTO-BENEFÍCIO*
+      `💸 *PLANO 6 — MELHOR CUSTO-BENEFÍCIO* 💸
 
 Inclui:
 
 ✅ 3 Pós-graduações
 ✅ + 3 cursos de extensão
 
-💳 Investimento
-
+💳 Investimento:
 12x R$199 no cartão
-12x R$249 no boleto
 
 👇 Confira:
 
-${LINKS.plano6}`
+${LINKS.plano6}
+
+👨‍💼 *Precisa de ajuda para escolher o melhor plano?*
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu ◀️​`
     );
     return;
   }
@@ -687,21 +804,26 @@ ${LINKS.plano6}`
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `🔐 *PLANO 12 — ÁREA DE SEGURANÇA*
+      `🔐 *PLANO 12 — ÁREA DE SEGURANÇA* 🔐
 
 Inclui:
 
 ✅ Gestão Pública
 ✅ Gestão em Segurança Privada
 
-💳 Investimento
+Plano 11 - Gestão de Segurança Privada - 12x *R$399,00*
 
-12x R$449 no cartão
-12x R$499 no boleto
+Plano 12 - Gestão de Segurança Privada + Gestão Pública - 12x *R$549,00*
+
 
 👇 Para iniciar sua matrícula:
 
-${LINKS.plano12}`
+${LINKS.plano12}
+
+👨‍💼 *Precisa de ajuda para escolher o melhor plano?*
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu ◀️​`
     );
     return;
   }
@@ -710,7 +832,7 @@ ${LINKS.plano12}`
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `🎓 *PLANO 2 — DIPLOMAÇÃO EM GESTÃO PÚBLICA*
+      `🎓 *PLANO 2 — DIPLOMAÇÃO EM GESTÃO PÚBLICA* 🎓
 
 Ideal para quem quer concluir graduação rapidamente.
 
@@ -721,7 +843,47 @@ Ideal para quem quer concluir graduação rapidamente.
 
 👇 Inicie sua matrícula:
 
-${LINKS.plano2}`
+🎓 R4 — Complementação Pedagógica (1200h)
+Formação para habilitação docente conforme diretrizes educacionais.
+
+📚 Áreas disponíveis
+
+🎨 Artes
+🔹 Artes
+🔹 Artes Visuais
+
+🔬 Ciências
+🔹 Ciências Biológicas
+🔹 Física
+🔹 Química
+
+🌎 Ciências Humanas
+🔹 Filosofia
+🔹 Geografia
+🔹 História
+🔹 Sociologia
+🔹 Ciências da Religião
+
+📖 Linguagens
+🔹 Letras – Português
+🔹 Letras – Inglês
+🔹 Letras – Espanhol
+🔹 Letras – Libras
+
+📐 Exatas
+🔹 Matemática
+
+🏫 Educação
+🔹 Educação Especial
+🔹 Educação Física (apenas para licenciados)
+
+⏱ Carga horária: 1200 horas
+💻 Modalidade: Ensino híbrido com conteúdos online
+
+👇 Se desejar saber mais ou iniciar sua matrícula
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu principal 🏚️​`
     );
     return;
   }
@@ -730,7 +892,7 @@ ${LINKS.plano2}`
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `📚 *PLANO 5 — COMPLEMENTAÇÃO PEDAGÓGICA (R4)*
+      `📚 *PLANO 5 — COMPLEMENTAÇÃO PEDAGÓGICA (R4)* 📚
 
 Indicado para quem já possui graduação.
 
@@ -741,7 +903,12 @@ Indicado para quem já possui graduação.
 
 👇 Confira as áreas disponíveis:
 
-${LINKS.r4}`
+${LINKS.r4}
+
+👨‍💼 *Precisa de ajuda para escolher o melhor plano?*
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu ◀️​`
     );
     return;
   }
@@ -750,37 +917,93 @@ ${LINKS.r4}`
     etapa[jid] = "finalizado";
     await enviarTexto(
       jid,
-      `🏋️ *FORMAÇÃO EM EDUCAÇÃO FÍSICA*
+`🏋️‍♂️ Planos — Formação em Educação Física
 
-Disponível combinação de:
+Escolha a opção que melhor se encaixa no seu objetivo acadêmico:
 
-✅ Bacharelado
-✅ Complementação Pedagógica
+🥇 Plano B1 — Bacharelado em Educação Física
+🎓 Bacharel em Educação Física
 
-💳 Planos a partir de:
+💳 Investimento
+12x R$399,00
 
-12x R$399
+🥈 Plano B2 — Formação Completa em Educação Física
 
-👇 Confira as opções:
+Inclui:
 
-${LINKS.edf}`
+✅ Gestão Pública
+✅ Bacharelado em Educação Física
+✅ R4 Licenciatura em Educação Física
+
+💳 Investimento
+12x R$649,00
+
+🥉 Plano B3 — Formação Ampliada
+
+Inclui:
+
+✅ Gestão Pública
+✅ Bacharelado em Educação Física
+✅ R4 Licenciatura em Educação Física
+✅ + 1 R4 à escolha
+
+💳 Investimento
+12x R$749,00
+
+🏆 Plano B4 — Formação Premium
+
+Inclui:
+
+✅ Gestão Pública
+✅ Bacharelado em Educação Física
+✅ R4 Licenciatura em Educação Física
+✅ + 1 R4 à escolha
+✅ + 3 Pós-graduações
+
+💳 Investimento
+12x R$899,00
+
+🎓 Plano B5 — Formação Licenciatura + Bacharel
+
+Inclui:
+
+✅ Bacharelado em Educação Física
+✅ R4 Licenciatura em Educação Física
+
+💳 Investimento
+12x R$499,00
+
+${LINKS.matricula}
+
+👨‍💼 *Precisa de ajuda para escolher o melhor plano?*
+
+8️⃣ Chamar um Consultor
+0️⃣ Voltar ao menu ◀️​`
     );
     return;
   }
 
-  if (msg === "8") {
-    etapa[jid] = "finalizado";
-    await enviarTexto(
-      jid,
-      `👨‍💼 Vou encaminhar você para um especialista que poderá indicar o melhor plano para seu objetivo.
+if (msg === "8") {
+  etapa[jid] = "finalizado";
 
-Aguarde um momento.`
-    );
-    return;
-  }
+  await enviarTexto(
+    jid,
+    `👨‍💼 Perfeito! Já acionei um especialista.\n\n` +
+    `⏳ Em instantes você será atendido aqui mesmo no WhatsApp.`
+  );
+
+  await alertarAtendente(
+  nome,
+  jid,
+  "Planos",
+  "Cliente solicitou falar com consultor"
+);
+
+  return;
+}
 }
 
-async function handleEstado(jid, msg) {
+async function handleEstado(jid, msg, nome) {
   if (msg === "9") {
     etapa[jid] = "curso_menu";
     await enviarTexto(
@@ -788,10 +1011,16 @@ async function handleEstado(jid, msg) {
       `🎓 Sobre qual curso você gostaria de saber?
 
 1️⃣ Bacharelado
+
 2️⃣ Diplomação em Gestão Pública
+
 3️⃣ Licenciaturas
+
 4️⃣ Pós-graduação
-5️⃣ 🔙 Voltar`
+
+5️⃣ Voltar ◀️
+
+0️⃣ Menu Principal🏠`
     );
     return;
   }
@@ -832,18 +1061,14 @@ async function handleEstado(jid, msg) {
 
   await enviarTexto(
     jid,
-    `🚨🚨🚨\nAlém da Diplomação em Gestão Pública a FAUESP também oferece:\n\n• 15 Licenciaturas\n• Bacharel em Educação Física\n• 93 Pós-graduações`
+    `🚨\nAlém da Diplomação em Gestão Pública a FAUESP também oferece:\n\n• 15 Licenciaturas\n• Bacharel em Educação Física\n• 93 Pós-graduações`
   );
-  await delay(3000);
 
-  await enviarPDF(
-    jid,
-    PDF.planos,
-    `💰 Planos e valores\n\n🔥 *PLANOS EM PROMOÇÃO* 🔥\nPlanos 4 e 7 - estão em promoção até 31MAR26`
-  );
   await delay(2000);
 
-  await enviarTexto(jid, `Matrícula 👇\n\n${LINKS.matricula}`);
+  await enviarTexto(jid, `Matrícula 👇\n\n${LINKS.matricula}
+    
+    0️⃣ - Para voltar no Menu Principal`);
 }
 
 // ─── Dispatcher principal ─────────────────────────────────────────────────────
@@ -852,7 +1077,7 @@ async function handleEstado(jid, msg) {
  * Ponto de entrada para cada mensagem recebida.
  * Despacha para o handler correto com base em `etapa[jid]`.
  */
-async function processarMensagem(jid, texto) {
+async function processarMensagem(jid, texto, nome) {
   const msg = texto.toLowerCase().trim();
   if (!msg) return;
 
@@ -875,14 +1100,14 @@ async function processarMensagem(jid, texto) {
   }
 
   // Tabela de handlers por etapa.
-  const handlers = {
-    finalizado: handleFinalizado,
-    menu: handleMenu,
-    curso_menu: handleCursoMenu,
-    outros_menu: handleOutrosMenu,
-    planos_menu: handlePlanosMenu,
-    estado: handleEstado,
-  };
+const handlers = {
+  finalizado: (jid, msg) => handleFinalizado(jid, msg, nome),
+  menu: (jid, msg) => handleMenu(jid, msg, nome),
+  curso_menu: (jid, msg) => handleCursoMenu(jid, msg, nome),
+  outros_menu: (jid, msg) => handleOutrosMenu(jid, msg, nome),
+  planos_menu: (jid, msg) => handlePlanosMenu(jid, msg, nome),
+  estado: (jid, msg) => handleEstado(jid, msg, nome),
+};
 
   const handler = handlers[etapa[jid]];
 
@@ -974,6 +1199,7 @@ async function conectar() {
         if (!msg.message) continue;
 
         const jid = msg.key.remoteJid;
+        const nome = msg.pushName || "Cliente"; // ✅ AQUI
 
         if (msg.key.fromMe) continue;
         if (!jid) continue;
@@ -1004,7 +1230,7 @@ async function conectar() {
         atualizarSessao(jid);
         console.log("Mensagem recebida:", texto);
 
-        await processarMensagem(jid, texto);
+await processarMensagem(jid, texto, nome);
       } catch (e) {
         console.error("[ERRO] Falha ao processar mensagem:", e);
       }
