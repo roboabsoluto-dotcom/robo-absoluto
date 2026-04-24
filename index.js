@@ -374,9 +374,9 @@ Escolha uma das opções abaixo:
 
   if (msg === "3") {
     etapa[jid] = "finalizado";
-    await enviarTexto(
-      jid,
-      `📜 *Diplomas e Certificados*
+await enviarTexto(
+  jid,
+`📜 *Diplomas e Certificados*
 
 Todos os cursos possuem *certificação válida em todo o território nacional*, conforme a legislação educacional vigente.
 
@@ -384,18 +384,37 @@ Todos os cursos possuem *certificação válida em todo o território nacional*,
 
 Eles podem ser utilizados para:
 
-✅ Progressão na carreira
-✅ Provas de títulos em concursos
-✅ Atuação profissional na área de formação
-✅ Continuidade acadêmica
+✅ Progressão na carreira  
+✅ Provas de títulos em concursos  
+✅ Atuação profissional na área de formação  
+✅ Continuidade acadêmica  
 
-📄 Após a conclusão do curso, o aluno poderá solicitar a emissão do *certificado ou diploma oficial no site abaixo*.
+──────────────────
+
+⏳ *Prazo mínimo de conclusão*
+
+• Pós-graduação: *mínimo de 4 meses* após a matrícula  
+• Formação Pedagógica (R2/R4): *mínimo de 12 meses*
+
+──────────────────
+
+📦 *Prazo para emissão dos documentos*
+
+Após a conclusão do curso e envio correto de todos os documentos:
+
+• 🎓 Diplomação em Gestão Pública: *até 120 dias*  
+• 📚 Pós-graduação: *até 45 dias úteis*  
+• 🏫 Formação Pedagógica: *até 75 dias úteis*
+
+──────────────────
+
+📄 Após concluir o curso, o aluno poderá solicitar a emissão do *certificado ou diploma oficial* no site abaixo:
 
 ${LINKS.certificados}
 
-0️⃣ - Para voltar no Menu Principal`
-    );
-    return;
+0️⃣ - Voltar ao *Menu Principal*`
+);
+return;
   }
 
   if (msg === "4") {
