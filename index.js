@@ -1401,4 +1401,4 @@ carregarNumerosBloqueados();
 // Atualiza automaticamente a lista de bloqueados a cada 5 minutos
 setInterval(() => {
   carregarNumerosBloqueados();
-}, 300000);
+}, 60000);
