@@ -1197,7 +1197,7 @@ async function carregarNumerosBloqueados() {
       )
     );
 
-    console.log("🚫 Números bloqueados carregados:", numerosBloqueados.size);
+    console.log("🚫 Todos os Números bloqueados foram carregados:", numerosBloqueados.size);
 
   } catch (erro) {
     console.log("Erro ao carregar números bloqueados:", erro.message);
