@@ -14,6 +14,11 @@ const http = require("http");
 const express = require("express");
 const QRCode = require("qrcode");
 const { google } = require("googleapis");
+// Palavras que ativam o menu
+const saudacoes = ["oi","ola","olá","bom dia","boa tarde","boa noite"];
+
+// Controle de conversa humana
+let conversaHumana = new Set();
 let numerosBloqueados = new Set();
 
 // ─── Variáveis de ambiente ────────────────────────────────────────────────────
@@ -1183,11 +1188,10 @@ async function carregarNumerosBloqueados() {
       range: "lista_telefonica!B2:B",
     });
 
-   numerosBloqueados = new Set(
-  (response.data.values || []).map(numero =>
-    numero[0].replace(/\D/g, "")
-  )
-);
+   numerosBloqueados.clear();
+  (response.data.values || []).map(numero => {
+    numerosBloqueados.add(numero[0].replace(/\D/g, ""));
+  });
 
     console.log("🚫 Todos os Números bloqueados foram carregados:", numerosBloqueados.size);
 
@@ -1391,4 +1395,10 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🌐 Servidor rodando na porta ${PORT}`));
 
 conectar();
+
 carregarNumerosBloqueados();
+
+// Atualiza automaticamente a lista de bloqueados a cada 5 minutos
+setInterval(() => {
+  carregarNumerosBloqueados();
+}, 300000);
