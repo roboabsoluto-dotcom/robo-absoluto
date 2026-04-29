@@ -15,7 +15,6 @@ const express = require("express");
 const QRCode = require("qrcode");
 const { google } = require("googleapis");
 let numerosBloqueados = new Set();
-const conversaHumana = new Set();
 
 // ─── Variáveis de ambiente ────────────────────────────────────────────────────
 // Copie o arquivo .env.example para .env e preencha os valores antes de rodar.
@@ -1104,9 +1103,6 @@ async function handleEstado(jid, msg, nome) {
  * Despacha para o handler correto com base em `etapa[jid]`.
  */
 async function processarMensagem(jid, texto, nome) {
-  if (conversaHumana.has(jid)) {
-  return;
-}
   const msg = texto.toLowerCase().trim();
   const textoOriginal = texto.toLowerCase();
 
