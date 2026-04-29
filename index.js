@@ -13,6 +13,9 @@ const https = require("https");
 const http = require("http");
 const express = require("express");
 const QRCode = require("qrcode");
+const { google } = require("googleapis");
+let numerosBloqueados = new Set();
+const conversaHumana = new Set();
 
 // ─── Variáveis de ambiente ────────────────────────────────────────────────────
 // Copie o arquivo .env.example para .env e preencha os valores antes de rodar.
@@ -1097,7 +1100,21 @@ async function handleEstado(jid, msg, nome) {
  * Despacha para o handler correto com base em `etapa[jid]`.
  */
 async function processarMensagem(jid, texto, nome) {
+  if (conversaHumana.has(jid)) {
+  return;
+}
   const msg = texto.toLowerCase().trim();
+  const textoOriginal = texto.toLowerCase();
+
+if (
+  textoOriginal.includes("muito bom dia") ||
+  textoOriginal.includes("muito boa tarde") ||
+  textoOriginal.includes("muito boa noite")
+) {
+  conversaHumana.add(jid);
+  console.log("👨‍💼 Atendimento humano ativado:", jid);
+  return;
+}
   if (!msg) return;
 
   // Saudações sempre reiniciam o fluxo para o menu principal.
@@ -1154,7 +1171,39 @@ function extrairTexto(msg) {
 
   return "";
 }
+//---------Carregar Números do Sheets-------------------------------------------
+async function carregarNumerosBloqueados() {
 
+  try {
+
+    const auth = new google.auth.GoogleAuth({
+      keyFile: "credentials.json",
+      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+    });
+
+    const sheets = google.sheets({
+      version: "v4",
+      auth,
+    });
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: "1Ox54chIqM0NzjryDBUANOOYlxnvxKqoy4IIWNRJEPxE",
+      range: "lista_telefonica!B2:B",
+    });
+
+    numerosBloqueados = new Set(
+      (response.data.values || []).map(numero =>
+        numero[0] + "@s.whatsapp.net"
+      )
+    );
+
+    console.log("🚫 Números bloqueados carregados:", numerosBloqueados.size);
+
+  } catch (erro) {
+    console.log("Erro ao carregar números bloqueados:", erro.message);
+  }
+
+}
 // ─── Conexão WhatsApp ─────────────────────────────────────────────────────────
 
 async function conectar() {
@@ -1218,7 +1267,12 @@ async function conectar() {
         if (!msg.message) continue;
 
         const jid = msg.key.remoteJid;
-        const nome = msg.pushName || "Cliente"; // ✅ AQUI
+
+        const nome = msg.pushName || "Cliente"; 
+        if (numerosBloqueados.has(jid)) {
+  console.log("🚫 Número bloqueado:", jid);
+  return;
+}
 
         if (msg.key.fromMe) continue;
         if (!jid) continue;
@@ -1295,3 +1349,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🌐 Servidor rodando na porta ${PORT}`));
 
 conectar();
+carregarNumerosBloqueados();
