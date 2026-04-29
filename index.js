@@ -157,7 +157,11 @@ const siglas = {
  * Retorna null se não identificar nenhum estado.
  */
 function detectarEstado(msg) {
-  if (siglas[msg]) return siglas[msg];
+  for (const sigla in siglas) {
+  if (msg.includes(sigla)) {
+    return siglas[sigla];
+  }
+}
 
   for (const estado in aproveitamento) {
     if (msg.includes(estado)) return estado;
@@ -1106,22 +1110,13 @@ async function processarMensagem(jid, texto, nome) {
   const msg = texto.toLowerCase().trim();
   const textoOriginal = texto.toLowerCase();
 
-if (
-  textoOriginal.includes("muito bom dia") ||
-  textoOriginal.includes("muito boa tarde") ||
-  textoOriginal.includes("muito boa noite")
-) {
-  conversaHumana.add(jid);
-  console.log("👨‍💼 Atendimento humano ativado:", jid);
-  return;
-}
+
   if (!msg) return;
 
   // Saudações sempre reiniciam o fluxo para o menu principal.
-  const saudacoes = ["oi", "ola", "olá", "bom dia", "boa tarde", "boa noite"];
-  if (saudacoes.some((s) => msg.includes(s))) {
-    return mostrarMenu(jid);
-  }
+if (saudacoes.includes(msg)) {
+  return mostrarMenu(jid);
+}
 
   console.log(`[${jid}] Mensagem: "${msg}" | Etapa: ${etapa[jid]}`);
 
@@ -1136,19 +1131,20 @@ if (
   }
 
   // Tabela de handlers por etapa.
-const handlers = {
-  finalizado: (jid, msg) => handleFinalizado(jid, msg, nome),
-  menu: (jid, msg) => handleMenu(jid, msg, nome),
-  curso_menu: (jid, msg) => handleCursoMenu(jid, msg, nome),
-  outros_menu: (jid, msg) => handleOutrosMenu(jid, msg, nome),
-  planos_menu: (jid, msg) => handlePlanosMenu(jid, msg, nome),
-  estado: (jid, msg) => handleEstado(jid, msg, nome),
+
+ const handlers = {
+  finalizado: handleFinalizado,
+  menu: handleMenu,
+  curso_menu: handleCursoMenu,
+  outros_menu: handleOutrosMenu,
+  planos_menu: handlePlanosMenu,
+  estado: handleEstado,
 };
 
   const handler = handlers[etapa[jid]];
 
   if (handler) {
-    return handler(jid, msg);
+    return handler(jid, msg, nome);
   }
 
   // Etapa desconhecida — volta ao menu.
@@ -1191,11 +1187,11 @@ async function carregarNumerosBloqueados() {
       range: "lista_telefonica!B2:B",
     });
 
-    numerosBloqueados = new Set(
-      (response.data.values || []).map(numero =>
-        numero[0] + "@s.whatsapp.net"
-      )
-    );
+   numerosBloqueados = new Set(
+  (response.data.values || []).map(numero =>
+    numero[0].replace(/\D/g, "")
+  )
+);
 
     console.log("🚫 Todos os Números bloqueados foram carregados:", numerosBloqueados.size);
 
@@ -1267,12 +1263,62 @@ async function conectar() {
         if (!msg.message) continue;
 
         const jid = msg.key.remoteJid;
+const numero = jid.split("@")[0].replace(/\D/g, "");
 
         const nome = msg.pushName || "Cliente"; 
-        if (numerosBloqueados.has(jid)) {
-  console.log("🚫 Número bloqueado:", jid);
-  return;
+   if (numerosBloqueados.has(numero)) {
+  console.log("🚫 Número bloqueado:", numero);
+  continue;
 }
+
+const textoOriginal =
+  msg.message?.conversation ||
+  msg.message?.extendedTextMessage?.text ||
+  "";
+
+ if (texto.length > 500) {
+  console.log("⚠️ Mensagem muito longa ignorada:", numero);
+  continue;
+}
+
+const mensagem = textoOriginal.toLowerCase().trim();
+
+if (textoOriginal === "menu" && conversaHumana.has(jid)) {
+  conversaHumana.delete(jid);
+  console.log("🤖 Robô reativado manualmente:", jid);
+  await mostrarMenu(jid);
+  continue;
+}
+
+if (
+  mensagem.includes("muito bom dia") ||
+  mensagem.includes("muito boa tarde") ||
+  mensagem.includes("muito boa noite")
+) {
+  conversaHumana.add(jid);
+
+  console.log("👨‍💼 Atendimento humano ativado:", jid);
+
+    await enviarTexto(
+    jid,
+    "👨‍💼 Seu atendimento foi encaminhado para um atendente humano. Aguarde um momento."
+  );
+
+ // reativar em 30 minutos
+  setTimeout(() => {
+    conversaHumana.delete(jid);
+    console.log("🤖 Robô reativado automaticamente:", jid);
+  }, 30 * 60 * 1000);
+
+    continue;
+}
+
+if (conversaHumana.has(jid)) {
+  console.log("🤖 Robô desativado para:", jid);
+  continue;
+}
+
+
 
         if (msg.key.fromMe) continue;
         if (!jid) continue;
