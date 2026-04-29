@@ -64,7 +64,7 @@ const tempoSessao = {};
 const TIMEOUT_SESSAO_MS = 30 * 60 * 1000;
 
 // Numero de desvio
-const NUMERO_ATENDENTE = "5511941185543@s.whatsapp.net";
+const NUMERO_ATENDENTE = "551144117004@s.whatsapp.net";
 // ─── Utilitários ──────────────────────────────────────────────────────────────
 
 function delay(ms) {
