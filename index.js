@@ -663,6 +663,13 @@ Ele poderá ajudar com:
 Obrigado pela sua paciência!`
 );
 
+await delay(3000);
+
+await enviarTexto(
+  jid,
+"👨‍💼 Seu atendimento foi encaminhado para um atendente humano. Aguarde um momento."
+);
+
 await alertarAtendente(
   nome,
   jid,
@@ -673,11 +680,12 @@ await alertarAtendente(
 return;
 }
 
-  if (msg === "3") {
-    etapa[jid] = "finalizado";
+ if (msg === "3") {
+  etapa[jid] = "finalizado";
+
 await enviarTexto(
   jid,
-  `💳 *Setor Financeiro*
+`💳 *Setor Financeiro*
 
 Seu atendimento será encaminhado para um *especialista do setor financeiro*.
 
@@ -693,6 +701,13 @@ Ele poderá ajudar com:
 Agradecemos pela sua paciência! 🙏`
 );
 
+await delay(3000);
+
+await enviarTexto(
+  jid,
+"👨‍💼 Seu atendimento foi encaminhado para um atendente humano. Aguarde um momento."
+);
+
 await alertarAtendente(
   nome,
   jid,
@@ -700,7 +715,8 @@ await alertarAtendente(
   "Cliente solicitou atendimento financeiro"
 );
 
-return;  }
+return;
+}
 
   if (msg === "4") {
     etapa[jid] = "finalizado";
@@ -1015,21 +1031,37 @@ ${LINKS.matricula}
 
 if (msg === "8") {
   etapa[jid] = "finalizado";
+  conversaHumana.add(jid);
 
-  await enviarTexto(
-    jid,
-    `👨‍💼 Perfeito! Já acionei um especialista.\n\n` +
-    `⏳ Em instantes você será atendido aqui mesmo no WhatsApp.`
-  );
-
-  await alertarAtendente(
-  nome,
+await enviarTexto(
   jid,
-  "Planos",
-  "Cliente solicitou falar com consultor"
+`👨‍💼 *Atendimento com Consultor*
+
+Perfeito! Vou encaminhar seu atendimento para um *consultor especializado*.
+
+Ele poderá ajudar com:
+
+✅ Explicação detalhada dos planos  
+✅ Escolha da melhor opção para você  
+✅ Informações sobre matrícula  
+✅ Orientação completa sobre os cursos`
 );
 
-  return;
+await delay(3000);
+
+await enviarTexto(
+  jid,
+"👨‍💼 Seu atendimento foi encaminhado para um atendente humano. Aguarde um momento."
+);
+
+await alertarAtendente(
+  nome,
+  jid,
+  "Consultor",
+  "Cliente solicitou falar com um consultor"
+);
+
+return;
 }
 }
 
@@ -1264,6 +1296,7 @@ async function conectar() {
 
         const jid = msg.key.remoteJid;
 const numero = jid.split("@")[0].replace(/\D/g, "");
+console.log("📱 Número recebido:", numero);
 
         const nome = msg.pushName || "Cliente"; 
    if (numerosBloqueados.has(numero)) {
@@ -1276,7 +1309,7 @@ const textoOriginal =
   msg.message?.extendedTextMessage?.text ||
   "";
 
- if (texto.length > 500) {
+ if (textoOriginal.length > 500) {
   console.log("⚠️ Mensagem muito longa ignorada:", numero);
   continue;
 }
@@ -1301,7 +1334,6 @@ if (
 
     await enviarTexto(
     jid,
-    "👨‍💼 Seu atendimento foi encaminhado para um atendente humano. Aguarde um momento."
   );
 
  // reativar em 30 minutos
