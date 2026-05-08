@@ -1235,7 +1235,7 @@ async function carregarNumerosBloqueados() {
 // ─── Conexão WhatsApp ─────────────────────────────────────────────────────────
 
 async function conectar() {
-  const { state, saveCreds } = await useMultiFileAuthState("./baileys_auth");
+  const { state, saveCreds } = await useMultiFileAuthState("./auth-atendimento");
   const { version } = await fetchLatestBaileysVersion();
 
   sock = makeWASocket({
@@ -1276,7 +1276,7 @@ async function conectar() {
         } else {
           console.log("❌ Deslogado. Acesse /qr para reconectar.");
           try {
-            fs.rmSync("./baileys_auth", { recursive: true, force: true });
+            fs.rmSync("./auth-atendimento", { recursive: true, force: true });
           } catch (e) {
             console.error("[ERRO] Falha ao remover sessão:", e.message);
           }
